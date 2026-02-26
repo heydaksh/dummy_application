@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/constants/app_colors.dart';
 
 /// ─── TOP BANNER WITH GRADIENT ───
-/// Contains greeting, notification/heart icons, Jobs/Stay tabs, and search bar.
-class TopBanner extends StatelessWidget {
+
+class TopBanner extends StatefulWidget {
   final int selectedTabIndex;
   final ValueChanged<int> onTabChanged;
 
@@ -15,8 +16,29 @@ class TopBanner extends StatelessWidget {
   });
 
   @override
+  State<TopBanner> createState() => _TopBannerState();
+}
+
+class _TopBannerState extends State<TopBanner> {
+  late final TextEditingController _searchController;
+  late final FocusNode _searchFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+    _searchFocusNode = FocusNode(canRequestFocus: false);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    debugPrint('Building TopBanner');
     final topPadding = MediaQuery.of(context).padding.top;
 
     return Container(
@@ -37,7 +59,6 @@ class TopBanner extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ─── TOP ROW: Greeting + Icons ───
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -60,7 +81,7 @@ class TopBanner extends StatelessWidget {
                     ),
                   ],
                 ),
-                // ─── Notification & Heart Icons ───
+                // ─── Notification & like Icons ───
                 Row(
                   children: [
                     _BannerIconButton(
@@ -108,12 +129,12 @@ class TopBanner extends StatelessWidget {
     required String label,
     required int index,
   }) {
-    final isSelected = selectedTabIndex == index;
+    final isSelected = widget.selectedTabIndex == index;
 
     return GestureDetector(
       onTap: () {
-        debugPrint('Tab tapped: $label');
-        onTabChanged(index);
+        HapticFeedback.lightImpact();
+        widget.onTabChanged(index);
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
@@ -162,23 +183,33 @@ class TopBanner extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: Text(
-                    'Search jobs or houses',
-                    style: TextStyle(fontSize: 14, color: AppColors.textGrey),
+                  child: TextField(
+                    controller: _searchController,
+                    focusNode: _searchFocusNode,
+                    cursorColor: AppColors.primaryBlue,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "Search Jobs or Houses",
+                    ),
                   ),
                 ),
-                // Blue circular search button
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primaryBlue,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.search,
-                    color: AppColors.white,
-                    size: 20,
+                // search button
+                GestureDetector(
+                  onTap: () {
+                    _searchController.clear();
+                  },
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: const BoxDecoration(
+                      color: AppColors.primaryBlue,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.search,
+                      color: AppColors.white,
+                      size: 20,
+                    ),
                   ),
                 ),
               ],
@@ -189,7 +220,25 @@ class TopBanner extends StatelessWidget {
 
         // Map View Button
         GestureDetector(
-          onTap: () => debugPrint('Map View tapped'),
+          onTap: () {
+            ScaffoldMessenger.of(context).showMaterialBanner(
+              MaterialBanner(
+                content: const Text('Feature Comming Soon...'),
+                backgroundColor: AppColors.cardBackground,
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+                    },
+                    child: const Text(
+                      'Close',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
           child: Container(
             width: 50,
             height: 50,
@@ -219,11 +268,10 @@ class TopBanner extends StatelessWidget {
   }
 }
 
-// ═══════════════════════════════════════════════════════════
-// ─── PRIVATE HELPER WIDGET ───
-// ═══════════════════════════════════════════════════════════
+//═════════════════════════════════════════════════════════
+//  HELPER WIDGET
+//═════════════════════════════════════════════════════════
 
-/// Small translucent icon button used in the banner header
 class _BannerIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
@@ -233,7 +281,22 @@ class _BannerIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        ScaffoldMessenger.of(context).showMaterialBanner(
+          MaterialBanner(
+            content: const Text('Feature Comming Soon...'),
+            backgroundColor: AppColors.cardBackground,
+            actions: [
+              TextButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+                },
+                child: const Text('Close', style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
+        );
+      },
       child: Container(
         width: 38,
         height: 38,

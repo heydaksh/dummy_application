@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dummy_application/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -23,14 +24,15 @@ class PropertyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     debugPrint('Building PropertyCard: $title');
 
     return Container(
-      width: 300, // Fixed width for horizontal scrolling
+      width: size.width * 0.8,
       margin: const EdgeInsets.only(right: 16),
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -42,19 +44,22 @@ class PropertyCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image Placeholder
           Container(
             height: 180,
             width: double.infinity,
+            clipBehavior: Clip.antiAlias,
             decoration: const BoxDecoration(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
               color: Colors.grey,
             ),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(20),
+            child: CachedNetworkImage(
+              imageUrl: image,
+              placeholder: (context, url) => const Center(
+                child: CircularProgressIndicator(color: AppColors.primaryBlue),
               ),
-              child: Image.network(image, fit: BoxFit.cover),
+              fit: BoxFit.cover,
+              errorWidget: (context, url, error) =>
+                  const Center(child: Icon(Icons.error)),
             ),
           ),
           Padding(
@@ -99,7 +104,7 @@ class PropertyCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                // Amenities Row
+                //  Row
                 Row(
                   children: [
                     _buildIconText(Icons.directions_walk, walkTime),

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 
 /// ─── BOTTOM NAV BAR (Animated Notch) ───
-/// Animated notch bottom navigation bar with 4 items.
 class AppBottomNavBar extends StatelessWidget {
   final NotchBottomBarController controller;
   final ValueChanged<int> onTap;
@@ -22,18 +21,18 @@ class AppBottomNavBar extends StatelessWidget {
       notchBottomBarController: controller,
       color: AppColors.white,
       notchColor: AppColors.primaryBlue,
-      showLabel: true,
-      showShadow: true,
+      showLabel: false,
+      showShadow: false,
       showBlurBottomBar: false,
       removeMargins: false,
-      bottomBarHeight: 62,
+      bottomBarHeight: 60,
       durationInMilliSeconds: 300,
       elevation: 8,
-      itemLabelStyle: const TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w500,
-        color: AppColors.primaryBlue,
-      ),
+      // itemLabelStyle: const TextStyle(
+      //   fontSize: 11,
+      //   fontWeight: FontWeight.w500,
+      //   color: AppColors.primaryBlue,
+      // ),
       bottomBarItems: const [
         BottomBarItem(
           inActiveItem: Icon(Icons.home_outlined, color: AppColors.textGrey),
@@ -63,8 +62,8 @@ class AppBottomNavBar extends StatelessWidget {
         ),
       ],
       onTap: onTap,
-      kIconSize: 25,
-      kBottomRadius: 20,
+      kIconSize: 15,
+      kBottomRadius: 0,
     );
   }
 }

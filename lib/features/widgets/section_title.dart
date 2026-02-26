@@ -1,14 +1,22 @@
+import 'package:dummy_application/features/pages/featured_home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/constants/app_colors.dart';
 
 /// ─── SECTION TITLE ───
-/// Reusable row with a bold title on the left and "See all" button on the right.
+
 class SectionTitle extends StatelessWidget {
   final String title;
   final VoidCallback? onSeeAllPressed;
+  final bool? buttonOn;
 
-  const SectionTitle({super.key, required this.title, this.onSeeAllPressed});
+  const SectionTitle({
+    super.key,
+    required this.title,
+    this.onSeeAllPressed,
+    this.buttonOn = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,15 +34,25 @@ class SectionTitle extends StatelessWidget {
               color: AppColors.textDark,
             ),
           ),
-          TextButton(
-            onPressed:
-                onSeeAllPressed ??
-                () => debugPrint('See all pressed for $title'),
-            child: const Text(
-              'See all',
-              style: TextStyle(color: AppColors.primaryBlue),
-            ),
-          ),
+          buttonOn!
+              ? TextButton(
+                  onPressed:
+                      onSeeAllPressed ??
+                      () {
+                        HapticFeedback.lightImpact();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const FeaturedHome(),
+                          ),
+                        );
+                      },
+                  child: const Text(
+                    'See all',
+                    style: TextStyle(color: AppColors.primaryBlue),
+                  ),
+                )
+              : SizedBox(),
         ],
       ),
     );

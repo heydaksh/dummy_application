@@ -1,16 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/constants/app_colors.dart';
 
 /// ─── POPULAR CITIES ───
-/// Horizontal scrolling list of city cards with gradient text overlay.
 class PopularCities extends StatelessWidget {
   const PopularCities({super.key});
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('Building PopularCities');
-
     final cities = [
       {
         'name': 'Manchester',
@@ -58,7 +56,7 @@ class PopularCities extends StatelessWidget {
   }
 }
 
-/// Popular city card with a colored placeholder background
+// crds
 class _PopularCityCard extends StatelessWidget {
   final String name;
   final String image;
@@ -75,16 +73,15 @@ class _PopularCityCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // ─── Placeholder background (replace with Image later) ───
-            Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(image),
-                  fit: BoxFit.cover,
-                ),
+            CachedNetworkImage(
+              imageUrl: image,
+              placeholder: (context, url) => const Center(
+                child: CircularProgressIndicator(color: AppColors.primaryBlue),
               ),
+              fit: BoxFit.cover,
+              errorWidget: (context, url, error) =>
+                  const Center(child: Icon(Icons.error)),
             ),
-            // ─── Gradient scrim for text ───
             Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(

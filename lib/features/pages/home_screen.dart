@@ -2,7 +2,7 @@ import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_not
 import 'package:flutter/material.dart';
 
 import '../../core/constants/app_colors.dart';
-import '../widgets/bottom_nav_bar.dart';
+import '../widgets/app_bottom_nav_bar.dart';
 import '../widgets/featured_properties.dart';
 import '../widgets/filters_section.dart';
 import '../widgets/popular_cities.dart';
@@ -20,16 +20,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   // ─── STATE ───
-  int _selectedTabIndex = 1; // 0 = Jobs, 1 = Stay
-  int _bottomNavIndex = 0;
+  int _selectedTabIndex = 1;
 
-  /// Controller for the animated notch bottom bar
+  final PageController _pageController = PageController(initialPage: 0);
+
   final NotchBottomBarController _notchController = NotchBottomBarController(
     index: 0,
   );
 
   @override
   void dispose() {
+    _pageController.dispose();
     _notchController.dispose();
     super.dispose();
   }
@@ -40,7 +41,38 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
-      body: SingleChildScrollView(
+      body: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        children: [
+          _buildHomePage(),
+          const Scaffold(
+            body: Center(child: Text('Explore Comming Soon...')),
+            backgroundColor: AppColors.cardBackground,
+          ),
+          const Scaffold(
+            body: Center(child: Text('History Comming Soon...')),
+            backgroundColor: AppColors.cardBackground,
+          ),
+          const Scaffold(
+            body: Center(child: Text('Profile Comming Soon...')),
+            backgroundColor: AppColors.cardBackground,
+          ),
+        ],
+      ),
+      bottomNavigationBar: AppBottomNavBar(
+        controller: _notchController,
+        onTap: (index) {
+          _pageController.jumpToPage(index);
+        },
+      ),
+    );
+  }
+
+  Widget _buildHomePage() {
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -68,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 24),
 
             // ─── 5. FEATURED HOME ───
-            const SectionTitle(title: 'Featured Home'),
+            const SectionTitle(title: 'Featured Home', buttonOn: true),
             const SizedBox(height: 4),
             const FeaturedProperties(),
             const SizedBox(height: 24),
@@ -80,11 +112,13 @@ class _HomeScreenState extends State<HomeScreen> {
               buttonLabel: 'Calculate',
               gradientColors: const [Color(0xFF3A3A3A), Color(0xFF1A1A1A)],
               onTap: () => debugPrint('Calculate tapped'),
+              bannerUrl:
+                  'https://www.incharge.org/wp-content/uploads/2024/03/average-monthly-house-expenses.jpg',
             ),
             const SizedBox(height: 24),
 
             // ─── 7. SUGGESTED FOR YOU ───
-            const SectionTitle(title: 'Suggested For You'),
+            const SectionTitle(title: 'Suggested For You', buttonOn: true),
             const SizedBox(height: 4),
             const FeaturedProperties(),
             const SizedBox(height: 24),
@@ -96,17 +130,29 @@ class _HomeScreenState extends State<HomeScreen> {
               buttonLabel: 'Find',
               gradientColors: const [Color(0xFF2C2C2C), Color(0xFF111111)],
               onTap: () => debugPrint('Find tapped'),
+              bannerUrl:
+                  'https://images.unsplash.com/photo-1722340319321-f73f2b96e0ff?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fGNvbWZvcnQlMjB6b25lfGVufDB8fDB8fHww',
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 40),
+            Text(
+              "More data comming soon...",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 30,
+                shadows: [
+                  Shadow(
+                    blurRadius: 5,
+                    color: Colors.transparent.withValues(alpha: 0.05),
+                  ),
+                ],
+                fontStyle: FontStyle.italic,
+                color: Colors.transparent.withValues(alpha: 0.1),
+              ),
+            ),
+            const SizedBox(height: 40),
           ],
         ),
-      ),
-      bottomNavigationBar: AppBottomNavBar(
-        controller: _notchController,
-        onTap: (index) {
-          debugPrint('Bottom nav tapped: $index');
-          setState(() => _bottomNavIndex = index);
-        },
       ),
     );
   }
